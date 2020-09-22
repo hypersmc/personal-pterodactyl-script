@@ -40,6 +40,7 @@ setup(){
   read FQDN
   output "Email:"
   read Email
+  repositories
 
 }
 
@@ -80,6 +81,7 @@ repositories(){
       apt -y install php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip mariadb-server nginx tar unzip git redis-server
     fi
   fi
+  database
 }
 database(){
   output "please type root password:"
@@ -97,6 +99,7 @@ database(){
   s5="FLUSH PRIVILEGES;"
   SQL="${s1}${s2}${s3}${s4}${s5}"
   mysql -u root -p "$rootpass" -e "$SQL"
+  composerandenv
 }
 
 composerandenv(){
@@ -141,8 +144,9 @@ ExecStart=/usr/bin/php /var/www/pterodactyl/artisan queue:work --queue=high,stan
 
 [Install]
 WantedBy=multi-user.target
-  EOF
+EOF
   warning "You have to make webservice file yourself."
+  installdaemonakanode
 }
 
 installdaemonakanode(){
@@ -176,9 +180,9 @@ StartLimitInterval=600
 
 [Install]
 WantedBy=multi-user.target
-  EOF
+EOF
   systemctl enable --now wings
-
+  coreinfo
 }
 coreinfo(){
   output "your website link is: $FQDN"
@@ -195,9 +199,4 @@ coreinfo(){
   output "password: notset"
 }
 #yeet stuff
-setup()
-repositories()
-database()
-composerandenv()
-installdaemonakanode()
-coreinfo()
+setup
