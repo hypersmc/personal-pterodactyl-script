@@ -28,7 +28,8 @@ setup(){
   if [ "$virt_server" != "" ] && [ "$virt_server" != "kvm" ] && [ "$virt_server" != "vmware" ] && [ "$virt_server" != "hyperv" ] && [ "$virt_server" != "openvz lxc" ] && [ "$virt_server" != "xen xen-hvm" ] && [ "$virt_server" != "xen xen-hvm aws" ]; then
     warning "Sorry but this install script won't continue on a unsupported Virtualization."
     output "Installation cancelled!"
-    exit 5
+    ;;
+    #exit 5
   fi
   output "before we start you need to type following:"
   output "FQDN (With or without https):"
