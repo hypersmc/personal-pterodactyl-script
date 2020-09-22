@@ -54,11 +54,11 @@ checkos(){
     exit 1
   fi
   if [ "$lsb_dist" =  "ubuntu" ]; then
-    if  [ "$dist_version" != "20.04" ] && [ "$dist_version" != "18.04" ] && [ "$dist_version" != "16.04" ]; then
+    if [ "$dist_version" != "20.04" ] && [ "$dist_version" != "18.04" ] && [ "$dist_version" != "16.04" ]; then
       output "Unsupported Ubuntu detected. Only Ubuntu 20.04, 18.04 and 16.04 are supported."
       exit 2
     fi
-  elif [ "$lsb_dist" != "ubuntu" ]; then
+  else
     output "operating system not supported!"
     output ""
     output "Please use following Operating systems."
