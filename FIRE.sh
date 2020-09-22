@@ -16,20 +16,20 @@ setup(){
 
   checkos
 
-  if [ "$EUID" -ne 0]; then
+  if [ "$EUID" -ne 0 ]; then
     output "Reminder run this script as root!"
     exit 3
   fi
-  
+
   output "virt detection"
-  if [ "$lsb_dist" = "ubuntu"]; then
+  if [ "$lsb_dist" = "ubuntu" ]; then
     apt-get update --fix-missing
     apt-get -y install software-properties-common
     add-apt-repository -y universe
     apt-get -y install virt-what curl
   fi
   virt_server=$(echo $(virt-what))
-    output "$virt_server"
+  output "$virt_server"
   if [ "$virt_server" != "" ] && [ "$virt_server" != "kvm" ] && [ "$virt_server" != "vmware" ] && [ "$virt_server" != "hyperv" ] && [ "$virt_server" != "openvz lxc" ] && [ "$virt_server" != "xen xen-hvm" ] && [ "$virt_server" != "xen xen-hvm aws" ]; then
     warning "Sorry but this install script won't continue on a unsupported Virtualization."
     output "Installation cancelled!"
@@ -69,8 +69,8 @@ checkos(){
 }
 repositories(){
   output "repositories setup"
-  if [ "$lsb_dist" = "ubuntu"]; then
-    if [ "$dist_version" = "18.04"] || [ "$dist_version" = "20.04"]; then
+  if [ "$lsb_dist" = "ubuntu" ]; then
+    if [ "$dist_version" = "18.04" ] || [ "$dist_version" = "20.04" ]; then
       apt -y install software-properties-common curl
       LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
       add-apt-repository -y ppa:chris-lea/redis-server
