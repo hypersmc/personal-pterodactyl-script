@@ -22,12 +22,7 @@ setup(){
   fi
 
   output "virt detection"
-  if [ "$lsb_dist" = "ubuntu" ]; then
-    apt-get update --fix-missing
-    apt-get -y install software-properties-common
-    add-apt-repository -y universe
-    apt-get -y install virt-what curl
-  fi
+
   virt_server=$(echo $(virt-what))
   output "$virt_server"
   if [ "$virt_server" != "" ] && [ "$virt_server" != "kvm" ] && [ "$virt_server" != "vmware" ] && [ "$virt_server" != "hyperv" ] && [ "$virt_server" != "openvz lxc" ] && [ "$virt_server" != "xen xen-hvm" ] && [ "$virt_server" != "xen xen-hvm aws" ]; then
