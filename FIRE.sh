@@ -20,16 +20,20 @@ setup(){
     output "Reminder run this script as root!"
     exit 3
   fi
-
+  if [ "$lsb_dist" = "ubuntu" ]; then
+    apt-get update --fix-missing
+    apt-get -y install software-properties-common
+    add-apt-repository -y universe
+    apt-get -y install virt-what curl
+  fi
   output "virt detection"
 
   virt_server=$(echo $(virt-what))
   output "$virt_server"
-  if [ "$virt_server" != "" ] && [ "$virt_server" != "kvm" ] && [ "$virt_server" != "vmware" ] && [ "$virt_server" != "hyperv" ] && [ "$virt_server" != "openvz lxc" ] && [ "$virt_server" != "xen xen-hvm" ] && [ "$virt_server" != "xen xen-hvm aws" ]; then
+  if [ "$virt_server" != "" ] && [ "$virt_server" != *"kvm"* ] && [ "$virt_server" != *"vmware"* ] && [ "$virt_server" != *"hyperv"* ] && [ "$virt_server" != *"openvz lxc"* ] && [ "$virt_server" != *"xen xen-hvm"* ] && [ "$virt_server" != *"xen xen-hvm aws"* ]; then
     warning "Sorry but this install script won't continue on a unsupported Virtualization."
     output "Installation cancelled!"
-    ;;
-    #exit 5
+    exit 5
   fi
   output "before we start you need to type following:"
   output "FQDN (With or without https):"
