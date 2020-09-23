@@ -30,13 +30,15 @@ setup(){
 
   virt_server=$(echo $(virt-what))
   output "$virt_server"
-  if [ "$virt_server" != "" ] && [ "$virt_server" != *"kvm"* ] && [ "$virt_server" != *"vmware"* ] && [ "$virt_server" != *"hyperv"* ] && [ "$virt_server" != *"openvz lxc"* ] && [ "$virt_server" != *"xen xen-hvm"* ] && [ "$virt_server" != *"xen xen-hvm aws"* ]; then
+  if [ "$virt_server" != "" ] && [ "$virt_server" != "kvm" ] && [ "$virt_server" != *"vmware"* ] && [ "$virt_server" != *"hyperv"* ] && [ "$virt_server" != *"openvz lxc"* ] && [ "$virt_server" != *"xen xen-hvm"* ] && [ "$virt_server" != *"xen xen-hvm aws"* ]; then
     warning "Sorry but this install script won't continue on a unsupported Virtualization."
     output "Installation cancelled!"
     exit 5
   fi
   output "before we start you need to type following:"
-  output "FQDN (With or without https):"
+  output "FQDN (just the http or https no ip):"
+  read FQDNB
+  output "FQDN (without https or http):"
   read FQDN
   output "Email:"
   read Email
@@ -84,13 +86,13 @@ repositories(){
   database
 }
 database(){
-  output "please type root password:"
+  output "please type login root password:"
   read rootpass
-  output "please type the database name for the panel:"
+  output "please type an database name for the panel:"
   read dbname
-  output "please type the database ip:"
+  output "please type database ip: (127.0.0.1 example)"
   read dbip
-  output "please type the database password for the panel:"
+  output "please type an database password for the panel:"
   read dbpass
   s1="USE mysql;"
   s2="CREATE USER '$dbname'@'$dbip' IDENTIFIED BY '$dbpass';"
@@ -98,22 +100,23 @@ database(){
   s4="GRANT ALL PRIVILEGES ON panel.* TO '$dbname'@'$dbip' WITH GRANT OPTION;"
   s5="FLUSH PRIVILEGES;"
   SQL="${s1}${s2}${s3}${s4}${s5}"
-  mysql -u root -p "$rootpass" -e "$SQL"
+  mysql -u root -e "$SQL"
   composerandenv
 }
 
 composerandenv(){
   output "database done. Downloading panel."
-  curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
   mkdir -p /var/www/pterodactyl
   cd /var/www/pterodactyl
   curl -Lo panel.tar.gz https://github.com/pterodactyl/panel/releases/download/v0.7.18/panel.tar.gz
   tar --strip-components=1 -xzvf panel.tar.gz
   chmod -R 755 storage/* bootstrap/cache/
   cp .env.example .env
-  composer install --no-dev --optimize-autoloader
+  curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+  /usr/local/bin/composer install --no-dev --optimize-autoloader
   php artisan key:generate --force
-  php artisan p:environment:setup -n --author=$Email --url=$FQDN --timezone=America/New_York --cache=redis --session=database --queue=redis --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+  php artisan p:environment:setup -n --author=$Email --url=$FQDNB$FQDN --timezone=America/New_York --cache=redis --session=database --queue=redis --redis-host=127.0.0.1 --redis-pass= --redis-port=6379
+  php artisan p:environment:database --host=127.0.0.1 --port=3306 --database=panel --username=pterodactyl --password=$password
   php artisan p:environment:database --host=$dbip --port=3306 --database=$panel --username=$dbname --password=$dbpass
   output "select your mail method"
   php artisan p:environment:mail
@@ -145,6 +148,10 @@ ExecStart=/usr/bin/php /var/www/pterodactyl/artisan queue:work --queue=high,stan
 [Install]
 WantedBy=multi-user.target
 EOF
+  webserversetup
+}
+
+webserversetup(){
   warning "You have to make webservice file yourself."
   installdaemonakanode
 }
@@ -185,7 +192,7 @@ EOF
   coreinfo
 }
 coreinfo(){
-  output "your website link is: $FQDN"
+  output "your website link is: $FQDNB$FQDN"
   output ""
   output "your database credentials:"
   output "DBIP: $dbip"
