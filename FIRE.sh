@@ -36,9 +36,9 @@ setup(){
     exit 5
   fi
   output "before we start you need to type following:"
-  output "FQDN (just the http:// or https:// no ip. all lowercase):"
+  output "FQDN (just the http:// or https:// not the ip/domain. All lowercase):"
   read FQDNB
-  output "FQDN (without https:// or http://):"
+  output "FQDN (Just the Ip or domain without https:// or http://):"
   read FQDN
   output "Email:"
   read Email
